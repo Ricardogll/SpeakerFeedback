@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         usersRegistration = db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(usersListener);
 
+        db.collection("users").document(userId).update("room","testroom");
     }
 
     @Override
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         roomRegistration.remove();
         usersRegistration.remove();
-
+        db.collection("users").document(userId).update("room","");
     }
 
     private void getOrRegisterUser() {
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickUsers(View view) {
-
+        Log.i("SpeakerFeedback", "Clicked bar");
 
     }
 }

@@ -14,7 +14,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/statusBar" />
+        app:srcCompat="@color/statusBar"
+        android:onClick="onClickUsers"
+        />
 
     <TextView
         android:id="@+id/textView"
@@ -24,7 +26,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="onClickUsers"
         android:textColor="@color/statusFont"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
