@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +33,33 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration usersRegistration;
+
+    class MyViewHolder extends RecyclerView.ViewHolder{
+        TextView view;
+
+        public MyViewHolder(View itemView){
+            super(itemView);
+            this.view=itemView.findViewById(R.id.item);
+
+        }
+    }
+
+    class MAdapter extends RecyclerView.Adapter<ViewHolder>{
+        @Override public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+            View itemView = getLayoutInflater().inflate(R.layout. , parent, false);
+            return new MyViewHolder(itemView);
+
+        }
+
+        @Override
+        public void onBindViewHolder(MyViewHolder holder, int position){
+
+
+
+        }
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,4 +184,5 @@ public class MainActivity extends AppCompatActivity {
         Log.i("SpeakerFeedback", "Clicked bar");
 
     }
+
 }
