@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="statusBar">#e0000000</color>
+    <color name="colorAccent">#ff4081</color>
+    <color name="statusBar">#e0202020</color>
+    <color name="statusFont">#e0c7c7c7</color>
 </resources>
