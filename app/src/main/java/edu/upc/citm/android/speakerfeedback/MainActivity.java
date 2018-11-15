@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +18,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,31 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private ListenerRegistration roomRegistration;
     private ListenerRegistration usersRegistration;
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
-        TextView view;
-
-        public MyViewHolder(View itemView){
-            super(itemView);
-            this.view=itemView.findViewById(R.id.item);
-
-        }
-    }
-
-    class MAdapter extends RecyclerView.Adapter<ViewHolder>{
-        @Override public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            View itemView = getLayoutInflater().inflate(R.layout. , parent, false);
-            return new MyViewHolder(itemView);
-
-        }
-
-        @Override
-        public void onBindViewHolder(MyViewHolder holder, int position){
 
 
-
-        }
-
-    }
 
 
     @Override
@@ -69,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
 
         getOrRegisterUser();
+
+
 
 
 
@@ -119,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         roomRegistration.remove();
         usersRegistration.remove();
-        db.collection("users").document(userId).update("room","");
+        db.collection("users").document(userId).update("room", FieldValue.delete());
     }
 
     private void getOrRegisterUser() {
@@ -182,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickUsers(View view) {
         Log.i("SpeakerFeedback", "Clicked bar");
-
+        Intent intent = new Intent(this, UsersInRoomActivity.class);
+        startActivity(intent);
     }
 
 }
