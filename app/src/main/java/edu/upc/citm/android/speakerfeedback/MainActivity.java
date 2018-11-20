@@ -24,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +34,14 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REGISTER_USER = 0;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private TextView textView;
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration usersRegistration;
+    private List<Poll> polls;
 
 
 
@@ -86,7 +91,17 @@ public class MainActivity extends AppCompatActivity {
     private EventListener<QuerySnapshot> pollListener = new EventListener<QuerySnapshot>() {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
+            if(e != null){
+                Log.e("SpeakerFreedback", "Error al rebre la llista de polls");
+                return;
+            }
+            polls = new ArrayList<>();
+            for(DocumentSnapshot doc : documentSnapshots){
+                Poll poll = doc.toObject(Poll.class);
+                polls.add(poll);
+            }
+            //TODO: avisar adaptador
+            Log.i("SpeakerFeedback", String.format("He carregat %d polls.", polls.size()));
         }
     };
 
