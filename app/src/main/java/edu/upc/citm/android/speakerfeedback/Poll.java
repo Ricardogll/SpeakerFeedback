@@ -29,6 +29,15 @@ public class Poll {
         this.options = options;
     }
 
+    public String getOptionsAsString(){
+
+        StringBuilder b = new StringBuilder();
+        for(String op : options){
+            b.append(op);
+            b.append("\n");
+        }
+        return b.toString();
+    }
     public boolean isOpen() {
         return open;
     }

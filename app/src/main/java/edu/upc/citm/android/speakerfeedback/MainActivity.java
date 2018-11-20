@@ -41,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration usersRegistration;
-    private List<Poll> polls;
-
+    private List<Poll> polls = new ArrayList<>();
+    private RecyclerView polls_view;
+    private Adapter adapter;
 
 
     @Override
@@ -51,11 +52,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textView = findViewById(R.id.textView);
-
+        polls_view = findViewById(R.id.pollsView);
         getOrRegisterUser();
 
+        adapter = new Adapter();
 
-
+        polls_view.setLayoutManager(new LinearLayoutManager(this));
+        polls_view.setAdapter(adapter);
 
 
     }
@@ -85,23 +88,24 @@ public class MainActivity extends AppCompatActivity {
             //    usersNames+=doc.getString("name") + "\n";
             //}
             //textView.setText(usersNames);
-         }
+        }
     };
 
     private EventListener<QuerySnapshot> pollListener = new EventListener<QuerySnapshot>() {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-            if(e != null){
+            if (e != null) {
                 Log.e("SpeakerFreedback", "Error al rebre la llista de polls");
                 return;
             }
-            polls = new ArrayList<>();
-            for(DocumentSnapshot doc : documentSnapshots){
+            polls.clear();
+            for (DocumentSnapshot doc : documentSnapshots) {
                 Poll poll = doc.toObject(Poll.class);
                 polls.add(poll);
             }
             //TODO: avisar adaptador
             Log.i("SpeakerFeedback", String.format("He carregat %d polls.", polls.size()));
+            adapter.notifyDataSetChanged();
         }
     };
 
@@ -119,12 +123,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //@Override
-   // protected void onStop() {
+    // protected void onStop() {
     //    super.onStop();
 
     //    roomRegistration.remove();
     //    usersRegistration.remove();
-     //   db.collection("users").document(userId).update("room", FieldValue.delete());
+    //   db.collection("users").document(userId).update("room", FieldValue.delete());
     //}
 
     private void getOrRegisterUser() {
@@ -191,4 +195,42 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView question_view;
+        private TextView options_view;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            question_view = itemView.findViewById(R.id.question_view);
+            options_view = itemView.findViewById(R.id.options_view);
+
+        }
+    }
+
+    class Adapter extends RecyclerView.Adapter<ViewHolder> {
+
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = getLayoutInflater().inflate(R.layout.poll_view, parent, false);
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            Poll poll = polls.get(position);
+            holder.question_view.setText(poll.getQuestion());
+
+            holder.options_view.setText(poll.getOptionsAsString());
+        }
+
+        @Override
+        public int getItemCount() {
+            return polls.size();
+        }
+    }
 }
+
