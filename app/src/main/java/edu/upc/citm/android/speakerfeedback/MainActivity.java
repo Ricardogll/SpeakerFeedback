@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,25 +83,34 @@ public class MainActivity extends AppCompatActivity {
          }
     };
 
+    private EventListener<QuerySnapshot> pollListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+        }
+    };
+
     @Override
     protected void onStart() {
         super.onStart();
 
-        roomRegistration = db.collection("rooms").document("testroom").addSnapshotListener(roomListener);
+        roomRegistration = db.collection("rooms").document("testroom").addSnapshotListener(this, roomListener);
 
-        usersRegistration = db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(usersListener);
+        usersRegistration = db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(this, usersListener);
 
-        db.collection("users").document(userId).update("room","testroom");
+        //db.collection("users").document(userId).update("room","testroom");
+
+        db.collection("rooms").document("testroom").collection("polls").addSnapshotListener(this, pollListener);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
+    //@Override
+   // protected void onStop() {
+    //    super.onStop();
 
-        roomRegistration.remove();
-        usersRegistration.remove();
-        db.collection("users").document(userId).update("room", FieldValue.delete());
-    }
+    //    roomRegistration.remove();
+    //    usersRegistration.remove();
+     //   db.collection("users").document(userId).update("room", FieldValue.delete());
+    //}
 
     private void getOrRegisterUser() {
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
