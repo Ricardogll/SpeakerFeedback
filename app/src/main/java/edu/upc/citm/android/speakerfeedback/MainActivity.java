@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Document;
@@ -119,7 +121,9 @@ public class MainActivity extends AppCompatActivity {
 
         //db.collection("users").document(userId).update("room","testroom");
 
-        db.collection("rooms").document("testroom").collection("polls").addSnapshotListener(this, pollListener);
+        db.collection("rooms").document("testroom").collection("polls")
+                .orderBy("start", Query.Direction.DESCENDING)
+                .addSnapshotListener(this, pollListener);
     }
 
     //@Override
@@ -200,11 +204,16 @@ public class MainActivity extends AppCompatActivity {
 
         private TextView question_view;
         private TextView options_view;
+        private TextView label_view;
+        private CardView card_view;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
             question_view = itemView.findViewById(R.id.question_view);
             options_view = itemView.findViewById(R.id.options_view);
+            label_view=itemView.findViewById(R.id.label_view);
+            card_view = itemView.findViewById(R.id.cardview);
 
         }
     }
@@ -222,8 +231,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Poll poll = polls.get(position);
-            holder.question_view.setText(poll.getQuestion());
+            if(position == 0){
+                holder.label_view.setVisibility(View.VISIBLE);
+                if(poll.isOpen())
+                    holder.label_view.setText("Active");
+                else
+                    holder.label_view.setText("Previous");
+            }else {
+                if(!poll.isOpen() && polls.get(position-1).isOpen()){
+                    holder.label_view.setText("Previous");
+                    holder.label_view.setVisibility(View.VISIBLE);
+                }else{
+                    holder.label_view.setVisibility(View.GONE);
+                }
+            }
 
+
+            holder.card_view.setCardElevation(poll.isOpen() ? 5.0f : 0.0f);
+
+            holder.question_view.setText(poll.getQuestion());
             holder.options_view.setText(poll.getOptionsAsString());
         }
 
