@@ -1,8 +1,10 @@
 package edu.upc.citm.android.speakerfeedback;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -30,7 +32,9 @@ import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -199,6 +203,43 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onClickCardView(int pos) {
+
+
+
+        Poll current_poll = polls.get(pos);
+
+        //String[] options = (String[]) current_poll.getOptions().toArray();
+
+
+        //CharSequence[] options = new CharSequence[current_poll.getOptions().size()];
+        int i=0;
+
+        String[] options = new String[3];
+        for(String item: current_poll.getOptions() ){
+
+             options[i] = item;
+             i++;
+            Log.i("SpeakerFeedback", options[i].toString());
+        }
+
+
+
+        Log.i("SpeakerFeedback", "Clicked poll");
+        AlertDialog builder = new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Vote")
+                //.setMessage("Get poll question here")
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                }).show();
+
+
+    }
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -214,7 +255,13 @@ public class MainActivity extends AppCompatActivity {
             options_view = itemView.findViewById(R.id.options_view);
             label_view=itemView.findViewById(R.id.label_view);
             card_view = itemView.findViewById(R.id.cardview);
-
+            card_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    onClickCardView(pos);
+                }
+            });
         }
     }
 
@@ -245,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
                     holder.label_view.setVisibility(View.GONE);
                 }
             }
-
 
             holder.card_view.setCardElevation(poll.isOpen() ? 5.0f : 0.0f);
 
