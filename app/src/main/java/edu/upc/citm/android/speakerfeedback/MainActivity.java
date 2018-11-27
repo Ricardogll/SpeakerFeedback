@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             polls.clear();
             for (DocumentSnapshot doc : documentSnapshots) {
                 Poll poll = doc.toObject(Poll.class);
+                poll.setId(doc.getId());
                 polls.add(poll);
             }
             //TODO: avisar adaptador
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         roomRegistration = db.collection("rooms").document("testroom").addSnapshotListener(this, roomListener);
 
         usersRegistration = db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(this, usersListener);
+
 
         //db.collection("users").document(userId).update("room","testroom");
 
@@ -206,38 +209,43 @@ public class MainActivity extends AppCompatActivity {
     public void onClickCardView(int pos) {
 
 
-
-        Poll current_poll = polls.get(pos);
+        final Poll current_poll = polls.get(pos);
 
         //String[] options = (String[]) current_poll.getOptions().toArray();
 
 
         //CharSequence[] options = new CharSequence[current_poll.getOptions().size()];
-        int i=0;
 
-        String[] options = new String[3];
-        for(String item: current_poll.getOptions() ){
+        if (current_poll.isOpen()) {
+            List<String> optlist = current_poll.getOptions();
+            String[] options = new String[optlist.size()];
+            for (int i = 0; i < optlist.size(); i++) {
+                options[i] = optlist.get(i);
+                Log.i("SpeakerFeedback", options[i].toString());
+            }
 
-             options[i] = item;
-             i++;
-            Log.i("SpeakerFeedback", options[i].toString());
+            Log.i("SpeakerFeedback", "Clicked poll");
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Vote")
+                    //.setMessage("Get poll question here")
+                    .setItems(options, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            saveVote(current_poll.getId(), which);
+                            dialog.dismiss();
+                        }
+                    }).show();
         }
+    }
+
+    private void saveVote(String pollid, int which) {
 
 
-
-        Log.i("SpeakerFeedback", "Clicked poll");
-        AlertDialog builder = new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Vote")
-                //.setMessage("Get poll question here")
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                }).show();
-
-
+        Map <String, Object> map = new HashMap<String, Object>();
+        map.put("option",which);
+        map.put("pollid",pollid);
+        db.collection("rooms").document("testroom").collection("votes").document(userId).set(map);
     }
 
 
