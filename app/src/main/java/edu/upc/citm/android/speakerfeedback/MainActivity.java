@@ -66,7 +66,18 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setLayoutManager(new LinearLayoutManager(this));
         polls_view.setAdapter(adapter);
 
+        startFirestoreListenerService();
+    }
 
+    private void startFirestoreListenerService(){
+        Intent intent = new Intent(this, FirestoreListenerService.class);
+        intent.putExtra("room","testroom");
+        startService(intent);
+    }
+
+    private void stopFirestoreListenerService(){
+        Intent intent = new Intent(this,FirestoreListenerService.class);
+        stopService(intent);
     }
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
@@ -123,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
         roomRegistration = db.collection("rooms").document("testroom").addSnapshotListener(this, roomListener);
 
-        usersRegistration = db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(this, usersListener);
+        usersRegistration = db.collection("users").whereEqualTo("rooms", "testroom").addSnapshotListener(this, usersListener);
 
 
         //db.collection("users").document(userId).update("room","testroom");
