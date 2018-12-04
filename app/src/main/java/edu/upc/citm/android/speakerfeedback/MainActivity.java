@@ -31,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         polls_view = findViewById(R.id.pollsView);
         getOrRegisterUser();
+        if (userId != null) {
+            enterRoom();
+        }
 
         adapter = new Adapter();
 
@@ -69,14 +73,31 @@ public class MainActivity extends AppCompatActivity {
         startFirestoreListenerService();
     }
 
-    private void startFirestoreListenerService(){
+    @Override
+    protected void onDestroy() {
+        exitRoom();
+        super.onDestroy();
+    }
+
+    private void enterRoom() {
+        db.collection("users").document(userId).update("room", "testroom");
+
+    }
+
+    private void exitRoom() {
+        db.collection("users").document(userId).update("room", FieldValue.delete());
+
+    }
+
+    private void startFirestoreListenerService() {
         Intent intent = new Intent(this, FirestoreListenerService.class);
-        intent.putExtra("room","testroom");
+        intent.putExtra("room", "testroom");
+
         startService(intent);
     }
 
-    private void stopFirestoreListenerService(){
-        Intent intent = new Intent(this,FirestoreListenerService.class);
+    private void stopFirestoreListenerService() {
+        Intent intent = new Intent(this, FirestoreListenerService.class);
         stopService(intent);
     }
 
@@ -137,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
         usersRegistration = db.collection("users").whereEqualTo("rooms", "testroom").addSnapshotListener(this, usersListener);
 
 
-        //db.collection("users").document(userId).update("room","testroom");
-
         db.collection("rooms").document("testroom").collection("polls")
                 .orderBy("start", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, pollListener);
@@ -188,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     private void registerUser(String name) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("name", name);
+        fields.put("last_active", new Date());
         db.collection("users").add(fields).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
@@ -199,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                         .putString("userId", userId)
                         .commit();
                 Log.i("SpeakerFeedback", "New user: userId = " + userId);
+                enterRoom();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -253,9 +274,9 @@ public class MainActivity extends AppCompatActivity {
     private void saveVote(String pollid, int which) {
 
 
-        Map <String, Object> map = new HashMap<String, Object>();
-        map.put("option",which);
-        map.put("pollid",pollid);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("option", which);
+        map.put("pollid", pollid);
         db.collection("rooms").document("testroom").collection("votes").document(userId).set(map);
     }
 
@@ -272,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
             super(itemView);
             question_view = itemView.findViewById(R.id.question_view);
             options_view = itemView.findViewById(R.id.options_view);
-            label_view=itemView.findViewById(R.id.label_view);
+            label_view = itemView.findViewById(R.id.label_view);
             card_view = itemView.findViewById(R.id.cardview);
             card_view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -297,17 +318,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Poll poll = polls.get(position);
-            if(position == 0){
+            if (position == 0) {
                 holder.label_view.setVisibility(View.VISIBLE);
-                if(poll.isOpen())
+                if (poll.isOpen())
                     holder.label_view.setText("Active");
                 else
                     holder.label_view.setText("Previous");
-            }else {
-                if(!poll.isOpen() && polls.get(position-1).isOpen()){
+            } else {
+                if (!poll.isOpen() && polls.get(position - 1).isOpen()) {
                     holder.label_view.setText("Previous");
                     holder.label_view.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     holder.label_view.setVisibility(View.GONE);
                 }
             }
