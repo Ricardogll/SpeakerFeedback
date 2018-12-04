@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Poll> polls = new ArrayList<>();
     private RecyclerView polls_view;
     private Adapter adapter;
+    private boolean firestone_list_flag=false;
 
 
     @Override
@@ -70,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setLayoutManager(new LinearLayoutManager(this));
         polls_view.setAdapter(adapter);
 
-        startFirestoreListenerService();
+        if(firestone_list_flag==false)
+            startFirestoreListenerService();
     }
 
     @Override
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     private void startFirestoreListenerService() {
         Intent intent = new Intent(this, FirestoreListenerService.class);
         intent.putExtra("room", "testroom");
-
+        firestone_list_flag=true;
         startService(intent);
     }
 
