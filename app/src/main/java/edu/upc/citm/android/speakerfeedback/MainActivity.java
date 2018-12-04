@@ -11,6 +11,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Poll> polls = new ArrayList<>();
     private RecyclerView polls_view;
     private Adapter adapter;
-    private boolean firestone_list_flag=false;
+
 
 
     @Override
@@ -71,14 +74,42 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setLayoutManager(new LinearLayoutManager(this));
         polls_view.setAdapter(adapter);
 
-        if(firestone_list_flag==false)
-            startFirestoreListenerService();
+
     }
 
     @Override
     protected void onDestroy() {
         exitRoom();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.close_menu,menu);
+
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()){
+            case R.id.menu_close:
+                Log.i("SpeakerFeedback", "Closing app");
+
+                stopFirestoreListenerService();
+
+                finish();
+                //System.exit(0);
+
+                break;
+        }
+
+        return true;
     }
 
     private void enterRoom() {
@@ -94,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     private void startFirestoreListenerService() {
         Intent intent = new Intent(this, FirestoreListenerService.class);
         intent.putExtra("room", "testroom");
-        firestone_list_flag=true;
+
         startService(intent);
     }
 

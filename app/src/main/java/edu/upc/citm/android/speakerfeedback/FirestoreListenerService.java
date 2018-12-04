@@ -11,19 +11,22 @@ import android.util.Log;
 
 public class FirestoreListenerService extends Service {
 
+    private boolean firestone_list_flag=false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoreListenerService.onCreate");
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("SpeakerFeedback","FirestoreListenerService.onStartCommand");
 
-        createForegroundNotification();
-
+        if(firestone_list_flag==false) {
+            createForegroundNotification();
+        }
         return START_NOT_STICKY;
     }
 
@@ -36,9 +39,11 @@ public class FirestoreListenerService extends Service {
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                 .setContentTitle(String.format("Connectat a Testroom"))
                 .setSmallIcon(R.drawable.ic_message)
-                .setContentIntent(pendingIntent).build();
+                .setContentIntent(pendingIntent)
+                .build();
 
         startForeground(1,notification);
+        firestone_list_flag=true;
     }
 
     @Override
