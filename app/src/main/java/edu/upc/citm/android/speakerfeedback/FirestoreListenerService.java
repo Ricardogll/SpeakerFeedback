@@ -43,7 +43,7 @@ public class FirestoreListenerService extends Service {
                 .build();
 
         startForeground(1,notification);
-        firestone_list_flag=true;
+        firestone_list_flag = true;
     }
 
     @Override
