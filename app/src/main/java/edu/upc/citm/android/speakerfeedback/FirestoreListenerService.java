@@ -9,8 +9,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class FirestoreListenerService extends Service {
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private boolean firestone_list_flag=false;
 
     @Override
@@ -18,6 +28,8 @@ public class FirestoreListenerService extends Service {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoreListenerService.onCreate");
 
+        db.collection("rooms").document("testroom").collection("polls")
+                .whereEqualTo("open",true).addSnapshotListener(pollListener);
     }
 
     @Override
@@ -45,6 +57,24 @@ public class FirestoreListenerService extends Service {
         startForeground(1,notification);
         firestone_list_flag = true;
     }
+
+    private EventListener<QuerySnapshot> pollListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            if (e != null) {
+                Log.e("SpeakerFreedback", "Error al rebre la llista de polls");
+                return;
+            }
+
+            List<Poll> polls = new ArrayList<>();
+            for (DocumentSnapshot doc : documentSnapshots) {
+                Poll poll = doc.toObject(Poll.class);
+                poll.setId(doc.getId());
+                polls.add(poll);
+                Log.i("SpeakerFeedback", String.format("Nova pregunta %s",poll.getQuestion()));
+            }
+        }
+    };
 
     @Override
     public void onDestroy() {

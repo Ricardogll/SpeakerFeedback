@@ -114,12 +114,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void enterRoom() {
         db.collection("users").document(userId).update("room", "testroom");
+        startFirestoreListenerService();
 
     }
 
     private void exitRoom() {
         db.collection("users").document(userId).update("room", FieldValue.delete());
-
     }
 
     private void startFirestoreListenerService() {
