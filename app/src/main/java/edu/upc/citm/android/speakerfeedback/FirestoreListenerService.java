@@ -1,12 +1,15 @@
 package edu.upc.citm.android.speakerfeedback;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class FirestoreListenerService extends Service {
 
@@ -56,6 +60,27 @@ public class FirestoreListenerService extends Service {
 
         startForeground(1,notification);
         firestone_list_flag = true;
+
+    }
+    private void createNewPollNotification(String question) {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
+
+
+        //Creem una notificació o crode, startForeground (Perque el servei no pari mai fins que tu no ho diguis)
+        Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
+                .setContentTitle(question)
+                .setSmallIcon(R.drawable.ic_message)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setVibrate(new long[]{ 1000, 1000})
+                .setPriority(NotificationManager.IMPORTANCE_HIGH)
+                .build();
+
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(2,notification);
+
     }
 
     private EventListener<QuerySnapshot> pollListener = new EventListener<QuerySnapshot>() {
@@ -72,6 +97,7 @@ public class FirestoreListenerService extends Service {
                 poll.setId(doc.getId());
                 polls.add(poll);
                 Log.i("SpeakerFeedback", String.format("Nova pregunta %s",poll.getQuestion()));
+                createNewPollNotification(poll.getQuestion());
             }
         }
     };
