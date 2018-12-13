@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enterRoom() {
-        db.collection("users").document(userId).update("room", "testroom");
+        db.collection("users").document(userId).update("room", "rooom");
         startFirestoreListenerService();
 
     }
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startFirestoreListenerService() {
         Intent intent = new Intent(this, FirestoreListenerService.class);
-        intent.putExtra("room", "testroom");
+        intent.putExtra("room", "rooom");
 
         startService(intent);
     }
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
             if (e != null) {
-                Log.e("SpeakerFeedback", "Error al rebre rooms/testroom", e);
+                Log.e("SpeakerFeedback", "Error al rebre rooms/rooom", e);
                 return;
             }
             String name = documentSnapshot.getString("name");
@@ -186,12 +186,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        roomRegistration = db.collection("rooms").document("testroom").addSnapshotListener(this, roomListener);
+        roomRegistration = db.collection("rooms").document("rooom").addSnapshotListener(this, roomListener);
 
-        usersRegistration = db.collection("users").whereEqualTo("rooms", "testroom").addSnapshotListener(this, usersListener);
-
-
-        db.collection("rooms").document("testroom").collection("polls")
+        usersRegistration = db.collection("users").whereEqualTo("rooms", "rooom").addSnapshotListener(this, usersListener);
+        db.collection("rooms").document("rooom").collection("polls")
                 .orderBy("start", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, pollListener);
     }
@@ -310,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("option", which);
         map.put("pollid", pollid);
-        db.collection("rooms").document("testroom").collection("votes").document(userId).set(map);
+        db.collection("rooms").document("rooom").collection("votes").document(userId).set(map);
     }
 
 

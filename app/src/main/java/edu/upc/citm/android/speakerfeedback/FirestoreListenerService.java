@@ -32,7 +32,7 @@ public class FirestoreListenerService extends Service {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoreListenerService.onCreate");
 
-        db.collection("rooms").document("testroom").collection("polls")
+        db.collection("rooms").document("rooom").collection("polls")
                 .whereEqualTo("open",true).addSnapshotListener(pollListener);
     }
 
@@ -53,7 +53,7 @@ public class FirestoreListenerService extends Service {
 
         //Creem una notificació o crode, startForeground (Perque el servei no pari mai fins que tu no ho diguis)
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle(String.format("Connectat a Testroom"))
+                .setContentTitle(String.format("Connectat a rooom"))
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentIntent(pendingIntent)
                 .build();
