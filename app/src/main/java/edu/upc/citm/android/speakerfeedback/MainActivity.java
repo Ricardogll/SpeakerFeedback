@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
         polls_view = findViewById(R.id.pollsView);
         getRoomSelected();
         getOrRegisterUser();
-        if (userId != null) {
-            enterRoom();
-        }
 
         adapter = new Adapter();
 
@@ -238,6 +235,9 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     String room_name = data.getStringExtra("room_name");
                     roomID = room_name;
+                    if (userId != null && roomID != null) {
+                        enterRoom();
+                    }
                 } else {
                     Toast.makeText(this, "Put a correct room ID", Toast.LENGTH_SHORT).show();
                     finish();
