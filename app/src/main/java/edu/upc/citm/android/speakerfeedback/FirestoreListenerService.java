@@ -1,7 +1,6 @@
 package edu.upc.citm.android.speakerfeedback;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -20,19 +19,19 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class FirestoreListenerService extends Service {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private boolean firestone_list_flag=false;
+    private String roomID;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoreListenerService.onCreate");
 
-        db.collection("rooms").document("rooom").collection("polls")
+        db.collection("rooms").document(roomID).collection("polls")
                 .whereEqualTo("open",true).addSnapshotListener(pollListener);
     }
 
@@ -42,6 +41,7 @@ public class FirestoreListenerService extends Service {
 
         if(firestone_list_flag==false) {
             createForegroundNotification();
+            roomID = intent.getStringExtra("roomID");
         }
         return START_NOT_STICKY;
     }

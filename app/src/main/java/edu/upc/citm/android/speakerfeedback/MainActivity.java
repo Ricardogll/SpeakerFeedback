@@ -31,19 +31,16 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Document;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REGISTER_USER = 0;
+    private static final int ROOM_SELECTER = 1;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Poll> polls = new ArrayList<>();
     private RecyclerView polls_view;
     private Adapter adapter;
-
+    private String roomID;
 
 
     @Override
@@ -64,10 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         textView = findViewById(R.id.textView);
         polls_view = findViewById(R.id.pollsView);
+        getRoomSelected();
         getOrRegisterUser();
-        if (userId != null) {
-            enterRoom();
-        }
 
         adapter = new Adapter();
 
@@ -113,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enterRoom() {
-        db.collection("users").document(userId).update("room", "rooom");
+        db.collection("users").document(userId).update("room", roomID);
         startFirestoreListenerService();
 
     }
@@ -124,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startFirestoreListenerService() {
         Intent intent = new Intent(this, FirestoreListenerService.class);
-        intent.putExtra("room", "rooom");
+        intent.putExtra("roomID", roomID);
 
         startService(intent);
     }
@@ -186,10 +181,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        roomRegistration = db.collection("rooms").document("rooom").addSnapshotListener(this, roomListener);
+        roomRegistration = db.collection("rooms").document(roomID).addSnapshotListener(this, roomListener);
 
-        usersRegistration = db.collection("users").whereEqualTo("rooms", "rooom").addSnapshotListener(this, usersListener);
-        db.collection("rooms").document("rooom").collection("polls")
+        usersRegistration = db.collection("users").whereEqualTo("rooms", roomID).addSnapshotListener(this, usersListener);
+        db.collection("rooms").document(roomID).collection("polls")
                 .orderBy("start", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, pollListener);
     }
@@ -218,6 +213,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void getRoomSelected()
+    {
+        Intent intent = new Intent(this, RoomSelecter.class);
+        startActivityForResult(intent, ROOM_SELECTER);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -227,6 +228,18 @@ public class MainActivity extends AppCompatActivity {
                     registerUser(name);
                 } else {
                     Toast.makeText(this, "Has de registrar un nom", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            case ROOM_SELECTER:
+                if (resultCode == RESULT_OK) {
+                    String room_name = data.getStringExtra("room_name");
+                    roomID = room_name;
+                    if (userId != null && roomID != null) {
+                        enterRoom();
+                    }
+                } else {
+                    Toast.makeText(this, "Put a correct room ID", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 break;
@@ -308,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("option", which);
         map.put("pollid", pollid);
-        db.collection("rooms").document("rooom").collection("votes").document(userId).set(map);
+        db.collection("rooms").document(roomID).collection("votes").document(userId).set(map);
     }
 
 
