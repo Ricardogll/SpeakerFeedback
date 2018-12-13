@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         textView = findViewById(R.id.textView);
         polls_view = findViewById(R.id.pollsView);
-        getRoomSelected();
         getOrRegisterUser();
 
         adapter = new Adapter();
@@ -108,9 +107,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enterRoom() {
+        addListeners();
         db.collection("users").document(userId).update("room", roomID);
         startFirestoreListenerService();
-
     }
 
     private void exitRoom() {
@@ -180,7 +179,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
+    private void addListeners() {
         roomRegistration = db.collection("rooms").document(roomID).addSnapshotListener(this, roomListener);
 
         usersRegistration = db.collection("users").whereEqualTo("rooms", roomID).addSnapshotListener(this, usersListener);
@@ -210,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
+            getRoomSelected();
         }
     }
 
@@ -263,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                         .putString("userId", userId)
                         .commit();
                 Log.i("SpeakerFeedback", "New user: userId = " + userId);
-                enterRoom();
+                getRoomSelected();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
