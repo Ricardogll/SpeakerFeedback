@@ -98,6 +98,7 @@ public class FirestoreListenerService extends Service {
                 Log.i("SpeakerFeedback", String.format("Nova pregunta %s",poll.getQuestion()));
                 createNewPollNotification(poll.getQuestion());
             }
+
         }
     };
 
