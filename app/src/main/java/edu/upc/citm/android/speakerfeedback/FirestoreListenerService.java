@@ -30,9 +30,6 @@ public class FirestoreListenerService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoreListenerService.onCreate");
-
-        db.collection("rooms").document(roomID).collection("polls")
-                .whereEqualTo("open",true).addSnapshotListener(pollListener);
     }
 
     @Override
@@ -42,6 +39,8 @@ public class FirestoreListenerService extends Service {
         if(firestone_list_flag==false) {
             createForegroundNotification();
             roomID = intent.getStringExtra("roomID");
+            db.collection("rooms").document(roomID).collection("polls")
+                    .whereEqualTo("open",true).addSnapshotListener(pollListener);
         }
         return START_NOT_STICKY;
     }

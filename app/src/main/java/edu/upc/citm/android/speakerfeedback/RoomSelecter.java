@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,12 +48,12 @@ public class RoomSelecter extends AppCompatActivity {
                 return;
             }
 
-            for(DocumentSnapshot doc : documentSnapshots){
+            /*for(DocumentSnapshot doc : documentSnapshots){
 
                 if(doc.getString("name") == room_name.getText().toString()){
                     room_exists=true;
                 }
-            }
+            }*/
 
         }
     };
@@ -66,6 +67,26 @@ public class RoomSelecter extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     //hemos encontrado la room. TODO: poner el if de abajo aqui y mirar si esta open = true
+
+                    if(documentSnapshot.contains("open") && documentSnapshot.getBoolean("open"))
+                    {
+                        if(documentSnapshot.contains("pasword"))
+                        {
+
+                        }
+                        else
+                        {
+                            ReturnRoomName();
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(RoomSelecter.this, "Room closed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(RoomSelecter.this, "Room doesn't exist", Toast.LENGTH_SHORT).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -75,15 +96,12 @@ public class RoomSelecter extends AppCompatActivity {
             }
         });
 
+    }
 
-        if (room_exists) {
-            Intent data = new Intent();
-            data.putExtra("room_name", room);
-            setResult(RESULT_OK, data);
-            finish();
-        }else{
-
-            //room not found
-        }
+    private void ReturnRoomName() {
+        Intent data = new Intent();
+        data.putExtra("room_name", room_name.getText().toString());
+        setResult(RESULT_OK, data);
+        finish();
     }
 }
