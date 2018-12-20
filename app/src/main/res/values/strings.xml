@@ -3,4 +3,6 @@
     <string name="closeapp">Close the app</string>
     <string name="pleaseenterroom">Please enter your room:</string>
     <string name="enterroom">Enter room</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
 </resources>
