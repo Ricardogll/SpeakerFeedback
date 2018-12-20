@@ -31,6 +31,10 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView polls_view;
     private Adapter adapter;
     private String roomID;
+    private List<String> rooms_save;
 
 
     @Override
@@ -72,9 +77,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        saveItemList();
+    }
+
+    @Override
     protected void onDestroy() {
         exitRoom();
+
         super.onDestroy();
+    }
+
+    private void saveItemList() {
+        try {
+            FileOutputStream outputStream = openFileOutput("items.txt", MODE_PRIVATE);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            for (int i = 0; i < rooms_save.size(); i++) {
+             //   ShoppingItem item = items.get(i);
+                String item = rooms_save.get(i);
+                writer.write(String.format("%s\n", item.toString()));
+            }
+            writer.close();
+        }
+        catch (FileNotFoundException e) {
+            Log.e("SpeakerFeedback", "saveItemList: FileNotFoundException");
+        }
+        catch (IOException e) {
+            Log.e("SpeakerFeedback", "saveItemList: IOException");
+        }
     }
 
     @Override
@@ -109,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
     private void enterRoom() {
         addListeners();
         db.collection("users").document(userId).update("room", roomID);
+        rooms_save.add(roomID);
         startFirestoreListenerService();
     }
 

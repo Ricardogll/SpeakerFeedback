@@ -38,7 +38,6 @@ public class FirestoreListenerService extends Service {
         roomID = intent.getStringExtra("roomID");
         if(firestone_list_flag==false) {
             createForegroundNotification();
-
             db.collection("rooms").document(roomID).collection("polls")
                     .whereEqualTo("open",true).addSnapshotListener(pollListener);
         }
