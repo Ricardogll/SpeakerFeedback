@@ -35,10 +35,10 @@ public class FirestoreListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("SpeakerFeedback","FirestoreListenerService.onStartCommand");
-
+        roomID = intent.getStringExtra("roomID");
         if(firestone_list_flag==false) {
             createForegroundNotification();
-            roomID = intent.getStringExtra("roomID");
+
             db.collection("rooms").document(roomID).collection("polls")
                     .whereEqualTo("open",true).addSnapshotListener(pollListener);
         }
@@ -52,7 +52,7 @@ public class FirestoreListenerService extends Service {
 
         //Creem una notificació o crode, startForeground (Perque el servei no pari mai fins que tu no ho diguis)
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle(String.format("Connectat a rooom"))
+                .setContentTitle(String.format("Connectat a %s", roomID))
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentIntent(pendingIntent)
                 .build();

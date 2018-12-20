@@ -1,10 +1,14 @@
 package edu.upc.citm.android.speakerfeedback;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -58,25 +62,63 @@ public class RoomSelecter extends AppCompatActivity {
         }
     };
 
+    //@Override
+    public void onCreateDialog(final String room, final String real_pass) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+        View roomView = inflater.inflate(R.layout.password, null);
+        final EditText pass_edit = roomView.findViewById(R.id.password);
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(roomView)
+                // Add action buttons
+                .setPositiveButton("Sign in", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // sign in the user ...
+
+                        String pass = pass_edit.getText().toString();
+                        if (pass.equals(real_pass)) {
+                            //Enter the room
+                            Toast.makeText(RoomSelecter.this, "Correct password", Toast.LENGTH_SHORT).show();
+                            ReturnRoomName(room);
+                        } else {
+                            Toast.makeText(RoomSelecter.this, "Wrong password", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        builder.create().show();
+
+    }
+
     public void onEnterRoomClick(View view)
     {
-        String room = room_name.getText().toString();
+        final String room = room_name.getText().toString();
 
         db.collection("rooms").document(room).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    //hemos encontrado la room. TODO: poner el if de abajo aqui y mirar si esta open = true
+                    //hemos encontrado la room.
 
                     if(documentSnapshot.contains("open") && documentSnapshot.getBoolean("open"))
                     {
-                        if(documentSnapshot.contains("pasword"))
+                        if(documentSnapshot.contains("password") && !documentSnapshot.getString("password").equals(""))
                         {
+                          onCreateDialog(room, documentSnapshot.getString("password"));
 
                         }
                         else
                         {
-                            ReturnRoomName();
+                            ReturnRoomName(room);
                         }
                     }
                     else
@@ -98,9 +140,9 @@ public class RoomSelecter extends AppCompatActivity {
 
     }
 
-    private void ReturnRoomName() {
+    private void ReturnRoomName(String room) {
         Intent data = new Intent();
-        data.putExtra("room_name", room_name.getText().toString());
+        data.putExtra("room_name", room);
         setResult(RESULT_OK, data);
         finish();
     }
