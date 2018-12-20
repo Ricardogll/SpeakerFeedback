@@ -135,8 +135,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SpeakerFeedback", "Error al rebre rooms/rooom", e);
                 return;
             }
-            String name = documentSnapshot.getString("name");
-            setTitle(name);
+            if (documentSnapshot.contains("open") && documentSnapshot.getBoolean("open")) {
+                String name = documentSnapshot.getString("name");
+                setTitle(name);
+            }
+            else {
+                exitRoom();
+                getRoomSelected();
+
+                Toast.makeText(MainActivity.this, "Room closed", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
