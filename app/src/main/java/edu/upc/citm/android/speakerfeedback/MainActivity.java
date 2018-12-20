@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity {
         addListeners();
         db.collection("users").document(userId).update("room", roomID);
         startFirestoreListenerService();
-        //if(!rooms.contains(roomID))
-        //    rooms.add(roomID);
     }
 
     private void exitRoom() {

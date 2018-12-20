@@ -81,7 +81,7 @@ public class UsersInRoomActivity extends AppCompatActivity {
         @Override public int getItemCount() {  return item_list.size();  }
 
         @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            View itemView = getLayoutInflater().inflate(R.layout.user_in_room_item , parent, false);
+            View itemView = getLayoutInflater().inflate(R.layout.item_room , parent, false);
             return new ViewHolder(itemView);
 
         }
