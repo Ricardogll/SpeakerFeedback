@@ -52,7 +52,7 @@ public class RoomSelecter extends AppCompatActivity {
         room_name = findViewById(R.id.edit_room_enter);
 
 
-        mylist = findViewById(R.id.users_list);
+        mylist = findViewById(R.id.recycler_view);
         mylist.setLayoutManager(new LinearLayoutManager(this));
         adapter = new Adapter();
         mylist.setAdapter(adapter);
@@ -185,9 +185,6 @@ public class RoomSelecter extends AppCompatActivity {
         }
     }
 
-
-
-
     private void GetRoomID(int pos)
     {
         ReturnRoomName(rooms.get(pos));
@@ -199,7 +196,7 @@ public class RoomSelecter extends AppCompatActivity {
 
         public ViewHolder(View itemView){
             super(itemView);
-            this.item=itemView.findViewById(R.id.item);
+            this.item = itemView.findViewById(R.id.item);
             this.item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

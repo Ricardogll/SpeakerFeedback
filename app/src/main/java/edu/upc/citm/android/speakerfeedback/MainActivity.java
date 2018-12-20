@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView polls_view;
     private Adapter adapter;
     private String roomID;
-    private List<String> rooms_save;
+    private List<String> rooms_save = new ArrayList<>();
 
 
     @Override
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        saveItemList();
+        //saveItemList();
     }
 
     @Override
