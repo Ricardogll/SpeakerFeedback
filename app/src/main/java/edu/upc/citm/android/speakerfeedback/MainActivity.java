@@ -98,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 stopFirestoreListenerService();
 
                 finish();
-                //System.exit(0);
-
                 break;
         }
 
@@ -110,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         addListeners();
         db.collection("users").document(userId).update("room", roomID);
         startFirestoreListenerService();
+        //if(!rooms.contains(roomID))
+        //    rooms.add(roomID);
     }
 
     private void exitRoom() {
