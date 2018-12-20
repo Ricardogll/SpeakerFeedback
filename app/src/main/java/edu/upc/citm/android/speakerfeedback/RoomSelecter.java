@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,6 +29,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 
 public class RoomSelecter extends AppCompatActivity {
@@ -160,6 +164,29 @@ public class RoomSelecter extends AppCompatActivity {
         setResult(RESULT_OK, data);
         finish();
     }
+
+
+    private void readItemList() {
+        try {
+            FileInputStream inputStream = openFileInput("items.txt");
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            Scanner scanner = new Scanner(reader);
+            //items = new ArrayList<>();
+
+            //Pasar al adapter el room
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                //String[] parts = line.split(";");
+                //items.add(new ShoppingItem(parts[0], parts[1].equals("true")));
+            }
+        }
+        catch (FileNotFoundException e) {
+            Log.e("ShoppingList", "readItemList: FileNotFoundException");
+        }
+    }
+
+
+
 
     private void GetRoomID(int pos)
     {
